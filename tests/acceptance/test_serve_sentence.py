@@ -43,6 +43,7 @@ class Serve(unittest.TestCase):
 
         thread = threading.Thread(target=server.run, daemon=True)
         thread.start()
+
         client = IpsumHttpClient()
         sentences = client.request_ipsum_sentencize().sentences
 
