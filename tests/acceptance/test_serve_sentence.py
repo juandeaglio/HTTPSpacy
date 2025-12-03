@@ -1,13 +1,14 @@
 # tests/acceptance/test_server_sentence.py
+import threading
 import unittest
 import requests
+import uvicorn
+from fastapi import FastAPI
 
 from pydantic import BaseModel
 from typing import List
 
-from src.adapters.web.app import create_app
-from src.adapters.web.server import create_server
-
+from src.adapters.web.inbound.fastapi.message_routes import MessageRoutes
 
 
 class IpsumResponseModel(BaseModel):
@@ -33,10 +34,15 @@ class IpsumHttpClient:
 
 class Serve(unittest.TestCase):
     def test_serve_a_sentence_to_http_client(self):
-        app = create_app()
-        server = create_server(app, "127.0.0.1", 80)
-        server.start()
+        app = FastAPI()
+        # TODO: vvv
+        routes = MessageRoutes()
+        app.include_router(routes.router)
+        config = uvicorn.Config(app, host="127.0.0.1", port=80, log_level="warning")
+        server = uvicorn.Server(config)
 
+        thread = threading.Thread(target=server.run, daemon=True)
+        thread.start()
         client = IpsumHttpClient()
         sentences = client.request_ipsum_sentencize().sentences
 
