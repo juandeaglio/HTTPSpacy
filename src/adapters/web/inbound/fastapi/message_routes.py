@@ -1,11 +1,13 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
+
+from src.application.sentences import Sentences
 
 
 class MessageRoutes:
-    def __init__(self, get_message_uc=None):
+    def __init__(self, app: Sentences):
+        self.app = app
         self.router = APIRouter()
-        self.uc = get_message_uc
-        self.router.add_api_route("/sentencize", self.get, methods=["GET"])
+        self.router.add_api_route("/sentencize", self.sentencize, methods=["POST"])
 
-    def get(self):
-        return {"message": self.uc.execute()}
+    def sentencize(self, body: Body(..., embed=True)):
+        return {"sentences": self.app.break_apart(body)}

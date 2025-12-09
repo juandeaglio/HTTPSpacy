@@ -2,13 +2,13 @@
 import threading
 import unittest
 import requests
-import uvicorn
-from fastapi import FastAPI
 
 from pydantic import BaseModel
 from typing import List
 
-from src.adapters.web.inbound.fastapi.message_routes import MessageRoutes
+from src.adapters.nlp.outbound.sentencizer.spacy import SpacySentencizerSentences
+from src.application.configuration import configure_app
+from tests.examples import sample_text
 
 
 class IpsumResponseModel(BaseModel):
@@ -16,16 +16,10 @@ class IpsumResponseModel(BaseModel):
 
 
 class IpsumHttpClient:
-    ipsum = """Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-    Nullam ultricies non leo semper fringilla. 
-    Quisque metus sem, convallis quis lorem a, rutrum fermentum lorem. 
-    Etiam egestas, nulla ut fermentum dignissim, felis lectus commodo mi, non lacinia ipsum enim id nisi. 
-    Integer sed elementum nisl. 
-    Pellentesque condimentum arcu lectus, ac hendrerit nulla viverra nec. Curabitur sit amet aliquam magna. 
-    Proin a mattis dui."""
+    ipsum = sample_text
 
     def request_ipsum_sentencize(self) -> IpsumResponseModel:
-        resp = requests.get("http://127.0.0.1/sentencize")
+        resp = requests.post("http://127.0.0.1/sentencize", data={"text": self.ipsum})
         resp.raise_for_status()  # fail fast if HTTP error
 
         # Validate JSON against the contract
@@ -34,12 +28,8 @@ class IpsumHttpClient:
 
 class Serve(unittest.TestCase):
     def test_serve_a_sentence_to_http_client(self):
-        app = FastAPI()
         # TODO: vvv
-        routes = MessageRoutes()
-        app.include_router(routes.router)
-        config = uvicorn.Config(app, host="127.0.0.1", port=80, log_level="warning")
-        server = uvicorn.Server(config)
+        server = configure_app(SpacySentencizerSentences())
 
         thread = threading.Thread(target=server.run, daemon=True)
         thread.start()
