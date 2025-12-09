@@ -9,5 +9,5 @@ class MessageRoutes:
         self.router = APIRouter()
         self.router.add_api_route("/sentencize", self.sentencize, methods=["POST"])
 
-    def sentencize(self, body: Body(..., embed=True)):
+    def sentencize(self, body: str = Body(..., embed=True)):
         return {"sentences": self.app.break_apart(body)}

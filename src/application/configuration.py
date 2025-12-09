@@ -11,6 +11,6 @@ def configure_app(sentencizer: SentencizerPort) -> uvicorn.Server:
     sentences = Sentences(sentencizer)
     routes = MessageRoutes(app=sentences)
     api.include_router(routes.router)
-    config = uvicorn.Config(api, host="127.0.0.1", port=80, log_level="warning")
+    config = uvicorn.Config(api, host="127.0.0.1", port=8980, log_level="warning")
     server = uvicorn.Server(config)
     return server

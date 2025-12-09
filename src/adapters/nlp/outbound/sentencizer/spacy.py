@@ -1,5 +1,9 @@
-from src.adapters.nlp.outbound.sentencizer import SentencizerAdapter
+from typing import List
+
+from src.ports.nlp.outbound.sentencizing import SentencizerPort
 
 
-class SpacySentencizerSentences(SentencizerAdapter):
-    pass
+class SpacySentencizer(SentencizerPort):
+    def get_sentences(self, text: str) -> List[str]:
+        pass
+
