@@ -1,3 +1,9 @@
+from src.ports.nlp.outbound.sentencizing import SentencizerPort
+
+
 class Sentences:
-    def break_apart(self, body):
-        pass
+    def __init__(self, sentencizer: SentencizerPort):
+        self.sentencizer = sentencizer
+
+    def break_apart(self, text: str):
+        self.sentencizer.get_sentences(text)
