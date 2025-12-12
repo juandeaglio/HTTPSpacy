@@ -30,7 +30,6 @@ class IpsumHttpClient:
 
 class Serve(unittest.TestCase):
     def test_serve_a_sentence_to_http_client(self):
-        # TODO: vvv
         server = configure_app(SpacySentencizer())
 
         thread = threading.Thread(target=server.run, daemon=True)
