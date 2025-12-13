@@ -1,15 +1,9 @@
 # tests/acceptance/test_server_sentence.py
-import threading
-import time
 import unittest
 import requests
 
 from pydantic import BaseModel
 from typing import List
-
-from src.adapters.nlp.outbound.sentencizer.spacy import SpacySentencizer
-from src.adapters.nlp.outbound.sentencizer.stub import StubSentencizer
-from src.application.configuration import configure_app
 from tests.examples import sample_text
 
 
@@ -28,16 +22,9 @@ class IpsumHttpClient:
         return IpsumResponseModel(**resp.json())
 
 
-class Serve(unittest.TestCase):
+class ServeTestCase(unittest.TestCase):
     def test_serve_a_sentence_to_http_client(self):
-        self.start_server_in_background()
-        time.sleep(0.050)
         client = IpsumHttpClient()
         sentences = client.request_ipsum_sentencize().sentences
 
         self.assertTrue(len(sentences) > 0)
-
-    def start_server_in_background(self):
-        server = configure_app(SpacySentencizer())
-        thread = threading.Thread(target=server.run, daemon=True)
-        thread.start()
